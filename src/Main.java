@@ -11,6 +11,11 @@ public class Main {
     }
 
     public static void checkout(Customer customer, Map<Product, Integer> cart) {
+        if (cart.isEmpty()) {
+            System.out.println("Your cart is empty.");
+            return;
+        }
+
         double subtotal = 0;
         double shipping = 0;
         final double shipVees = 5.0;
@@ -20,7 +25,12 @@ public class Main {
         for (Map.Entry<Product, Integer> entry : cart.entrySet()) {
             Product product = entry.getKey();
             int qty = entry.getValue();
-
+            if(product instanceof Expirable e) {
+                if (e.expirDate().before(new java.util.Date())) {
+                    System.out.println("Product expired: " + product.getName());
+                    continue;
+                }
+            }
             if (product instanceof Shippable s) {
                 shippable = true;
                 String weightGrams = formatWeight(s.weight() * qty);
@@ -37,6 +47,12 @@ public class Main {
         for (Map.Entry<Product, Integer> entry : cart.entrySet()) {
             Product product = entry.getKey();
             int qty = entry.getValue();
+            if(product instanceof Expirable e) {
+                if (e.expirDate().before(new java.util.Date())) {
+                    System.out.println("Product expired: " + product.getName());
+                    continue;
+                }
+            }
             double itemTotal = product.getPrice() * qty;
             subtotal += itemTotal;
             if(qty * product.getPrice() > customer.getBalance()) {
@@ -57,7 +73,7 @@ public class Main {
         Product laptop = new Laptop("Dell Laptop", 899.99, 5, 2.5);
         Product scratchCard = new MobileScratchCards("Mobile Scratch Card", 4.99, 100);
         Product cheese = new Cheese("Cheddar Cheese", 3.99, 20, new java.util.Date(2026, 5, 10), 0.5);
-        Product milk = new Milk("Organic Milk", 1.99, 50, new java.util.Date(2025, 12, 31), 1.0);
+        Product milk = new Milk("Organic Milk", 1.99, 50, new java.util.Date(125, 5, 31), 1.0);
         Customer customer = new Customer("Hussein Yasser", 2000.00);
         Map<Product, Integer> cart = new HashMap<>();
         cart.put(tv, 1);
